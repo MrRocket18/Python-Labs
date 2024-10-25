@@ -5,17 +5,15 @@
 Двоичные числа, не превышающие 1024 в десятичной расположенные в порядке возрастания. Для каждой такой последовательности минимальное число вывести прописью.
  """
 def check2(chislo):
-    col=0
     for i in chislo:
-        if i =="0" or i=="1":col+=1
-        else: col=0
-    if col == len(chislo): return True 
-    else: return False
+        if i !="0" and i!="1":
+            return False
+    return True
 def print_chislo(chislo):
     print("Минимальное число в последовательности:")
     for i in chislo:
-        print(i)
-    print("===================")
+        print(i, end=' ')
+    print()
 check=1024
 s=[]
 f=open("test.txt","r")
