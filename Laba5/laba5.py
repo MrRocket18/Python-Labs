@@ -4,11 +4,8 @@
 Вариант 21:
 F(1) = 1, F(2) = 1, F(n) = (-1)**n*(F(n-2)+n/(2n)! + 2), при n > 2
 """
-
-
 import math
-import time
-
+import timeit
 def recursive_f(n):
   if n == 1:
     return 1
@@ -25,27 +22,26 @@ def iterative_f(n):
   else:
     f_prev = 1  # F(1)
     f_curr = 1  # F(2)
-    factorial=24
+    factorial_back=24
     for i in range(3, n + 1):
-      factorial=factorial*(i*2)*(i*2-1)
-      f_next = (-1) ** i * (f_prev + i / factorial + 2)
+      factorial_now=factorial_back*(i*2)*(i*2-1)
+      f_next = (-1) ** i * (f_prev + i / factorial_now + 2)
       f_prev = f_curr
       f_curr = f_next
+      factorial_back=factorial_now
     return f_curr
 
-for n in range(100,1000+1,25):
-
-  start_time = time.time()
-  result_recursive = recursive_f(n)
-  end_time = time.time()
-  time_recursive = end_time - start_time
-
-  start_time = time.time()
-  result_iterative = iterative_f(n)
-  end_time = time.time()
-  time_iterative = end_time - start_time
-
-  print(f"F({n}) (рекурсивно): {result_recursive}, время: {time_recursive} сек.")
+p=1
+while p==1:
+  n=int(input("Введите n: "))
+  result_iterative=iterative_f(n)
+  time_iterative = timeit.timeit("iterative_f(n)",globals=globals(),number=1)
   print(f"F({n}) (итеративно): {result_iterative}, время: {time_iterative} сек.")
+  result_recursive = recursive_f(n)
+  time_recursive = timeit.timeit("recursive_f(n)",globals=globals(),number=1)
+  print(f"F({n}) (рекурсивно): {result_recursive}, время: {time_recursive} сек.")
   print("="*100)
-#Различия во времени начинают значительно увеличиваться при n=600
+  #Различия во времени можно увидеть с самого начала
+  #Рекурсия имеет ограничения в отличие от интератива
+
+  p=int(input("0/1: "))

@@ -8,8 +8,9 @@
 """
 
 
-import time
+import timeit
 from itertools import combinations
+# Часть 1
 def algoritm(mas):
     fractions=[]
     for numerator in mas:
@@ -20,41 +21,60 @@ def algoritm(mas):
 
 def functionaly(mas):
     fractions=[]
-    for pair in combinations(mas,2):
-        numerator, denominator = pair
+    for numerator, denominator in combinations(mas,2):
         if numerator < denominator:
             fractions.append((numerator,denominator))
     return fractions
-
-def find_max_fraction(numbers):
+# Часть 2
+def find_max_fraction_functionaly(numbers):
   max_fraction = (0, 1)
   max_value = 0
-  for pair in combinations(numbers, 2):
-    numerator, denominator = pair
-    if numerator < denominator and numerator + denominator < 20:
-      value = numerator / denominator
+  fractions = [
+    (numerator, denominator)
+    for numerator, denominator in combinations(numbers, 2)
+    if numerator < denominator and numerator + denominator < 40
+  ]
+  for fraction in fractions:
+      value = fraction[0] / fraction[1]
       if value > max_value:
         max_value = value
-        max_fraction = (numerator, denominator)
+        max_fraction = (fraction[0], fraction[1])
   return max_fraction
 
-spis=[3, 5, 7, 11, 13, 17]
+def find_max_fraction_algoritm(numbers):
+  fractions=[]
+  max_fraction = (0, 1)
+  max_value = 0
+  for numerator in numbers:
+    if numerator<19:
+      for denominator in numbers:
+        if  numerator < denominator and numerator + denominator < 40:
+          fractions.append((numerator,denominator))
+  for fraction in fractions:
+      value = fraction[0] / fraction[1]
+      if value > max_value:
+        max_value = value
+        max_fraction = (fraction[0], fraction[1])
+  return max_fraction
 
-start_time = time.time()
+spis=[]
+for i in range (3,200,2):
+   spis.append(i)
+
+# Часть 1
 result_algoritm = algoritm(spis)
-end_time = time.time()
-time_algoritm = end_time - start_time
-
-start_time = time.time()
-result_functionaly = functionaly(spis)
-end_time = time.time()
-time_functionaly = end_time - start_time
-
-start_time = time.time()
-result_find_max_fraction = find_max_fraction(spis)
-end_time = time.time()
-time_find_max_fraction = end_time - start_time
-
+time_algoritm = timeit.timeit("algoritm(spis)",globals=globals(),number=1)
 print(f"Результат: {result_algoritm}\nАлгоритмически время: {time_algoritm} сек.")
+
+result_functionaly = functionaly(spis)
+time_functionaly = timeit.timeit("functionaly(spis)",globals=globals(),number=1)
 print(f"Результат: {result_functionaly}\nС помощью функции время: {time_functionaly} сек.")
-print(f"Результат: {result_find_max_fraction}\nС помощью функции время: {time_find_max_fraction} сек.")
+
+# Часть 2
+result_find_max_fraction_algoritm = find_max_fraction_algoritm(spis)
+time_find_max_fraction_algoritm = timeit.timeit("find_max_fraction_algoritm(spis)",globals=globals(),number=1)
+print(f"Результат: {result_find_max_fraction_algoritm}\nС помощью функции время: {time_find_max_fraction_algoritm} сек.")
+
+result_find_max_fraction_functionaly = find_max_fraction_functionaly(spis)
+time_find_max_fraction_functionaly = timeit.timeit("find_max_fraction_functionaly(spis)",globals=globals(),number=1)
+print(f"Результат: {result_find_max_fraction_functionaly}\nС помощью функции время: {time_find_max_fraction_functionaly} сек.")
