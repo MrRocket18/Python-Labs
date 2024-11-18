@@ -13,7 +13,11 @@ def find_max_fraction(fractions):
         max_value = value
         max_fraction = (fraction[0], fraction[1])
   return max_fraction
-def find_fractions(mas):
+def find_fractions(mas,window):
+  if len(mas)==0:
+    messagebox.showwarning('Ошибка!', 'Вы ничего не ввели! Попробуйте снова')
+    window.destroy()
+    enter_window()
   fractions=[]
   for numerator, denominator in combinations(mas,2):
     if numerator < denominator:
@@ -29,13 +33,21 @@ def click_button_back(window2):
   window2.destroy()
   enter_window()
 
+def center_window(window,width,height):
+  window.update_idletasks()
+  screen_width = window.winfo_screenwidth()
+  screen_height = window.winfo_screenheight()
+  x = (screen_width - width) // 2
+  y = (screen_height - height) // 2
+  window.geometry(f"{width}x{height}+{x}+{y}")
+
 def enter_window():
   window = Tk()
   window.title("Окно ввода")
-  window.geometry("900x400")
+  center_window(window,900,400)
   window.resizable(width=False,height=False)
 
-  frame = Frame (window,bg="light blue")
+  frame = Frame (window,bg="gray")
   frame.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.98)
 
   Name_Text=Label(frame,text="Введите в нижнем поле числа, из которых хотите найти максимальныю правильную дробь, через пробел",font=("Time",13))
@@ -49,21 +61,25 @@ def enter_window():
   window.mainloop()
 
 def click_button_enter(window,numbers_str):
+  if numbers_str=="":
+    messagebox.showwarning('Ошибка!', 'Вы ничего не ввели! Попробуйте снова')
+    window.destroy()
+    enter_window()
   try:
     numbers =list(map(int,numbers_str.get("1.0","end-1c").split()))
   except (UnboundLocalError,ValueError):
     print(f"Ошибка ! Проверьте введенные данные и попробуйтьте снова.")
     messagebox.showwarning('Ошибка!', 'Ошибка! Проверьте введенные данные и попробуйтьте снова.')
-  true_fractions = find_fractions(numbers)
+  true_fractions = find_fractions(numbers,window)
   numerator, denominator=find_max_fraction(true_fractions)
 
   window.destroy()
   window2= Tk()
   window2.title("Окно вывода")
-  window2.geometry("900x900")
+  center_window(window2,900,900)
   window2.resizable(width=False,height=False)
 
-  frame = Frame (window2,bg="light blue")
+  frame = Frame (window2,bg="gray")
   frame.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.98)
 
   max_fraction_text=Label(frame,text="Максимальная правильная дробь, учитывая условия",font=("Time",20))
