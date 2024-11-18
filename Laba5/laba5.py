@@ -22,12 +22,14 @@ def iterative_f(n):
   else:
     f_prev = 1  # F(1)
     f_curr = 1  # F(2)
+    minus = -1
     factorial_back=24
     for i in range(3, n + 1):
       factorial_now=factorial_back*(i*2)*(i*2-1)
-      f_next = (-1) ** i * (f_prev + i / factorial_now + 2)
+      f_next = minus*(f_prev + i / factorial_now + 2)
       f_prev = f_curr
       f_curr = f_next
+      minus *=-1
       factorial_back=factorial_now
     return f_curr
 
