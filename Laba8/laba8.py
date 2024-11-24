@@ -15,9 +15,8 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import numpy as np
+named_colors = ["black", "white", "red", "green", "blue", "yellow", "cyan", "magenta","purple","pink"]
 class Point:
     def __init__(self,x,y):
         self.point = [x, y]
@@ -35,23 +34,19 @@ class Otrezki:
         self.point2 = point2
     def change_segmentation(self,count_segments):
         self.count_segments = count_segments
-    def vizualization(self,number):
+    def vizualization(self,canvas):
         if self.count_segments <= 0:
             raise ValueError("Число сегментов должно быть больше 0.")
 
         x_coords = np.linspace(self.point1.point[0], self.point2.point[0], self.count_segments + 1)
         y_coords = np.linspace(self.point1.point[1], self.point2.point[1], self.count_segments + 1)
 
-        plt.plot([self.point1.point[0], self.point2.point[0]], [self.point1.point[1], self.point2.point[1]], linewidth=1, label=f'Отрезок №{number}', color=self.color) 
+        for i in range(self.count_segments):
+            canvas.create_line(x_coords[i], y_coords[i], x_coords[i+1], y_coords[i+1], fill=self.color, width=2)
 
-        plt.plot(x_coords, y_coords, 'ro', markersize=5, label='Разделительные точки')
-
-        plt.xlabel("X-axis")
-        plt.ylabel("Y-axis")
-        plt.title(f"Визульное представление отрезка/отрезков")
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        for x, y in zip(x_coords, y_coords):
+            canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="red", outline="")
+            
     def view(self):
         return [self.point1,self.point2,self.color,self.count_segments]
     
@@ -72,12 +67,20 @@ def load_segments_from_file(filename):
             parts = line.strip().split(',')  # Разделитель запятая
             count+=1
             if len(parts) == 6:
-                try:
-                    x1, y1, x2, y2, color,segments = map(str, parts)
-                    mcolors.to_rgba(color)
-                    otrezki.append(Otrezki(Point(float(x1),float(y1)), Point(float(x2),float(y2)), color, int(segments))) # добавить проверку на введенный цвет
-                except ValueError:
-                    messagebox.showwarning(f"Ошибка в формате строки:" ,f"Строка №{count}: {line}\nПример формирования: x1,y1,x2,y2,цвет на английском,количество сегментов > 0\n(10,15,20,25,black,1)")
+                x1, y1, x2, y2, color,segments = map(str, parts)
+                if color.lower() in [c.lower() for c in named_colors]:
+                    if (float(x1)!=float(x2) and float(y1)!=float(y2)):
+                        if int(segments)>=0:
+                            try:
+                                otrezki.append(Otrezki(Point(float(x1),float(y1)), Point(float(x2),float(y2)), color, int(segments)))
+                            except ValueError:
+                                messagebox.showwarning(f"Ошибка в формате строки:" ,f"Строка №{count}: {line}\nПример формирования: x1,y1,x2,y2,цвет на английском,количество сегментов > 0\n(10,15,20,25,black,1)")
+                        else:
+                            messagebox.showwarning(f"Ошибка в формате строки:" ,f"Строка №{count}: {line} - Количество сегментов должно быть больше 0")
+                    else: 
+                        messagebox.showwarning(f"Ошибка в формате строки:" ,f"Строка №{count}: {line} - Такой отрезок не существует, т.к первая и вторая точка совпадают")
+                else:
+                    messagebox.showwarning(f"Ошибка в формате строки:" ,f"Строка №{count}: {line} - Неправильно введен цвет\n Доступные цвета: black, white, red, green, blue, yellow, cyan, magenta,purple,pink")
             else:
                 messagebox.showwarning(f"Ошибка в формировании данных в файле.", f"Пример формирования: x1,y1,x2,y2,цвет на английском,количество сегментов > 0\n (10,15,20,25,black,1)\n Строка №{count}: {line}")
             file.close()
@@ -183,14 +186,17 @@ def move_otrezok_fuc(otrezki,choice,x1,y1,x2,y2,text_view,filename):
     if choice != "" and x1 != "" and x2 != "" and y1 != "" and y2 != "": 
         try: 
             choice,x1,y1,x2,y2 = int(choice),float(x1),float(y1),float(x2),float(y2)
-            try:
-                otrezki[choice-1].move(Point(x1,y1),Point(x2,y2))
-                create_new_file(otrezki,filename)
-                new_otrezki = load_segments_from_file(filename)
-                view_otrezki_fuc(text_view,new_otrezki)
-                messagebox.showinfo(f"Успех","Отрезок успешно перемещён")
-            except:
-                messagebox.showwarning(f"Ошибка","Отрезка с таким номером нет, попробуйте снова")
+            if (float(x1)!=float(x2) and float(y1)!=float(y2)):
+                try:
+                    otrezki[choice-1].move(Point(x1,y1),Point(x2,y2))
+                    create_new_file(otrezki,filename)
+                    new_otrezki = load_segments_from_file(filename)
+                    view_otrezki_fuc(text_view,new_otrezki)
+                    messagebox.showinfo(f"Успех","Отрезок успешно перемещён")
+                except:
+                    messagebox.showwarning(f"Ошибка","Отрезка с таким номером нет, попробуйте снова")
+            else:
+                messagebox.showwarning(f"Ошибка","Отрезок не может быть перемещён, т.к точки совпадают")
         except:
             messagebox.showwarning(f"Ошибка","Неверный тип данных")
     else:
@@ -237,9 +243,7 @@ def change_color_fuc(otrezki,number_otrezka,color,text_view,filename):
     if number_otrezka != "" or color != "": 
         try:
             number_otrezka=int(number_otrezka)
-            try:
-                mcolors.to_rgba(color)
-                color = str(color)
+            if color.lower() in [c.lower() for c in named_colors]:
                 try:
                     otrezki[number_otrezka-1].get_color(color)
                     create_new_file(otrezki,filename)
@@ -248,7 +252,7 @@ def change_color_fuc(otrezki,number_otrezka,color,text_view,filename):
                     messagebox.showinfo(f"Успех","Отрезок успешно перекрашен")
                 except: 
                     messagebox.showwarning(f"Ошибка","Отрезка с таким номером нет, попробуйте снова")
-            except:
+            else:
                 messagebox.showwarning("Ошибка!","Проверьте данные в поле \"Новый цвет отрезка\"")
         except:
             messagebox.showwarning("Ошибка!","Проверьте данные в поле \"Номер отрезка\"")
@@ -351,7 +355,13 @@ def vizual_fuc(otrezki,number_otrezka):
         try:
             number_otrezka=int(number_otrezka)
             try:
-                otrezki[number_otrezka-1].vizualization(number_otrezka)
+                root = tk.Tk()
+                root.title("Segmented Line on Canvas")
+                canvas_width = 400
+                canvas_height = 300
+                canvas = tk.Canvas(root, width=canvas_width, height=canvas_height, bg="lightgray")
+                canvas.pack()
+                otrezki[number_otrezka-1].vizualization(canvas)
             except:
                 messagebox.showwarning(f"Ошибка","Отрезка с таким номером нет, попробуйте снова")
         except:
