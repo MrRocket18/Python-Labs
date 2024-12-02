@@ -3,7 +3,6 @@ import tkinter.messagebox as messagebox
 from tkinter import simpledialog
 
 def check_win(player):
-    """Checks if the given player has won."""
     for i in range(3):
         if all(buttons[i * 3 + j]["text"] == player for j in range(3)):
             return True
