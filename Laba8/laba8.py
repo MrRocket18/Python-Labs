@@ -41,11 +41,11 @@ class Otrezki:
         x_coords = np.linspace(self.point1.point[0], self.point2.point[0], self.count_segments + 1)
         y_coords = np.linspace(self.point1.point[1], self.point2.point[1], self.count_segments + 1)
 
-        for i in range(self.count_segments):
-            canvas.create_line(x_coords[i], y_coords[i], x_coords[i+1], y_coords[i+1], fill=self.color, width=2)
+      
+        canvas.create_line(450 + self.point1.point[0], 450 - self.point1.point[1], 450 + self.point2.point[0],450 - self.point2.point[1], fill=self.color, width=2)
 
         for x, y in zip(x_coords, y_coords):
-            canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="red", outline="")
+            canvas.create_oval(450 + (x - 2), 450 - (y - 2),450 + (x + 2),450 - (y + 2), fill="red", outline="")
             
     def view(self):
         return [self.point1,self.point2,self.color,self.count_segments]
@@ -357,8 +357,8 @@ def vizual_fuc(otrezki,number_otrezka):
             try:
                 root = tk.Tk()
                 root.title("Segmented Line on Canvas")
-                canvas_width = 400
-                canvas_height = 300
+                canvas_width = 900
+                canvas_height = 900
                 canvas = tk.Canvas(root, width=canvas_width, height=canvas_height, bg="lightgray")
                 canvas.pack()
                 otrezki[number_otrezka-1].vizualization(canvas)
