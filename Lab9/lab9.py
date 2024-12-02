@@ -16,11 +16,9 @@ def check_win(player):
     return False
 
 def check_draw():
-    """Checks if the game is a draw."""
     return all(button["text"] != "" for button in buttons)
 
 def button_click(row, col):
-    """Handles button clicks."""
     global current_player
     index = row * 3 + col
     if buttons[index]["text"] == "":
@@ -42,12 +40,10 @@ def button_click(row, col):
                 label.config(text=f"Ход игрока: {current_player}")
 
 def disable_buttons():
-    """Disables all buttons after the game ends."""
     for button in buttons:
         button.config(state=tk.DISABLED)
 
 def bot_move():
-    """Makes a move for the bot using Alpha-Beta pruning."""
     best_score = -float('inf')
     best_move = None
     for i in range(9):
@@ -101,7 +97,6 @@ def alphabeta(board, depth, alpha, beta, maximizing_player):
                     return alpha
         return min_eval
 def game_over():
-    """Handles the end of the game and asks the player if they want to continue."""
     result = messagebox.askyesno("Игра окончена", "Хотите сыграть ещё раз?")
     if result:
         get_player_choice()
