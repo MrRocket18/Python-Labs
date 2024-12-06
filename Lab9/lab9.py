@@ -130,6 +130,15 @@ def get_player_choice():
         get_player_choice()
     root.deiconify()
     start_new_game()
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    x = (screen_width - width) // 2
+    y = (screen_height - height) // 2
+    window.geometry(f"{width}x{height}+{x}+{y}")
 
 root = tk.Tk()
 root.title("Крестики-нолики")
@@ -146,5 +155,5 @@ for i in range(3):
         buttons.append(button)
 
 get_player_choice()
-
+center_window(root)
 root.mainloop()
